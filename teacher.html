@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="teacher.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="teacher-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">English Quiz</div>
+
+            <div class="user-card">
+                <div class="avatar" id="teacherAvatar">T</div>
+                <div>
+                    <div class="user-name" id="teacherName">Teacher</div>
+                    <div class="user-role">Teacher</div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-section="overview"
+                    onclick="showSection('overview')">Overview</button>
+                <button class="nav-btn" data-section="classes" onclick="showSection('classes')">Classes</button>
+                <button class="nav-btn" data-section="quizzes" onclick="showSection('quizzes')">Quizzes</button>
+                <button class="nav-btn" data-section="students" onclick="showSection('students')">Students</button>
+                <button class="nav-btn" data-section="results" onclick="showSection('results')">Results</button>
+            </nav>
+
+            <button class="logout-btn" id="logoutBtn">Log out</button>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <h1>Teacher Dashboard</h1>
+                    <p class="topbar-subtitle">Manage your classes, quizzes, students and track results.</p>
+                </div>
+            </header>
+
+            <!-- Overview -->
+            <section id="overview" class="panel">
+                <div class="cards-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Classes</div>
+                        <div class="stat-value" id="statClasses">0</div>
+                        <div class="stat-hint">Total classes you teach</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Students</div>
+                        <div class="stat-value" id="statStudents">0</div>
+                        <div class="stat-hint">Based on class sizes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Quizzes</div>
+                        <div class="stat-value" id="statQuizzes">0</div>
+                        <div class="stat-hint">Quizzes you've created</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Submissions</div>
+                        <div class="stat-value" id="statSubmissions">0</div>
+                        <div class="stat-hint">Student quiz attempts</div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h2>Recent Results</h2>
+                        <span class="panel-card-subtitle">Latest quiz submissions from your classes</span>
+                    </div>
+                    <div id="overviewResultsEmpty" class="empty-state">No results yet. Results will appear here once
+                        students submit quizzes.</div>
+                    <table class="data-table hidden" id="overviewResultsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Quiz</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overviewResultsBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Classes -->
+            <section id="classes" class="panel hidden">
+                <div class="panel-header">
+                    <div>
+                        <h2>Classes</h2>
+                        <p>Create and manage the classes you teach.</p>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="panel-card">
+                        <div class="panel-card-header">
+                            <h3>Create class</h3>
+                            <span class="panel-card-subtitle">Give your class a clear, recognizable name.</span>
+                        </div>
+                        <form id="classForm" class="form">
+                            <div class="form-group">
+                                <label for="className">Class name</label>
+                                <input type="text" id="className" placeholder="e.g. Grade 8 - Morning" required>
+                            </div>
+                            <button type="submit" class="btn-primary full-width">Create class</button>
+                        </form>
+                        <div id="classStatus" class="status-text"></div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-card-header">
+                            <h3>Your classes</h3>
+                            <span class="panel-card-subtitle">Overview of all classes assigned to you.</span>
+                        </div>
+                        <div id="classesEmpty" class="empty-state">You don't have any classes yet.</div>
+                        <table class="data-table hidden" id="classesTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Students</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quizzes -->
+            <section id="quizzes" class="panel hidden">
+                <div class="panel-header">
+                    <div>
+                        <h2>Quizzes</h2>
+                        <p>Create quizzes and assign them to classes.</p>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="panel-card">
+                        <div class="panel-card-header">
+                            <h3>Create quiz</h3>
+                            <span class="panel-card-subtitle">Set the quiz title and add questions below.</span>
+                        </div>
+                        <form id="quizForm" class="form">
+                            <div class="form-group">
+                                <label for="quizTitle">Quiz title</label>
+                                <input type="text" id="quizTitle" placeholder="e.g. Unit 3 - Listening" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Questions</label>
+                                <div class="field-hint">Add reading, listening, and writing questions. They will be
+                                    saved into the quiz bank.</div>
+                                <div class="builder-controls">
+                                    <button type="button" class="btn-secondary" id="addReadingQuestion">+ Reading
+                                        question</button>
+                                    <button type="button" class="btn-secondary" id="addListeningQuestion">+ Listening
+                                        question</button>
+                                    <button type="button" class="btn-secondary" id="addWritingQuestion">+ Writing
+                                        question</button>
+                                </div>
+                                <div id="questionList" class="question-list"></div>
+                            </div>
+                            <button type="submit" class="btn-primary full-width">Save quiz</button>
+                        </form>
+                        <div id="quizStatus" class="status-text"></div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-card-header">
+                            <h3>Your quizzes</h3>
+                            <span class="panel-card-subtitle">Quizzes you created in the quiz bank.</span>
+                        </div>
+                        <div id="quizzesEmpty" class="empty-state">No quizzes yet. Create your first quiz on the left.
+                        </div>
+                        <table class="data-table hidden" id="quizzesTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Questions</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quizzesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3>Assign quiz to class</h3>
+                        <span class="panel-card-subtitle">Choose a class and quiz to assign.</span>
+                    </div>
+                    <form id="assignForm" class="form form-inline">
+                        <div class="form-group">
+                            <label for="assignClassSelect">Class</label>
+                            <select id="assignClassSelect" required>
+                                <option value="">Select class...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignQuizSelect">Quiz</label>
+                            <select id="assignQuizSelect" required>
+                                <option value="">Select quiz...</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Assign</button>
+                    </form>
+                    <div id="assignStatus" class="status-text"></div>
+                </div>
+            </section>
+
+            <!-- Students -->
+            <section id="students" class="panel hidden">
+                <div class="panel-header">
+                    <div>
+                        <h2>Students</h2>
+                        <p>Create individual students or generate temporary login codes for a class.</p>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3>Create student</h3>
+                        <span class="panel-card-subtitle">Use this for named students you already know.</span>
+                    </div>
+                    <form id="studentForm" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentName">Full name</label>
+                                <input type="text" id="studentName" placeholder="Student full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentEmail">Email</label>
+                                <input type="email" id="studentEmail" placeholder="student@example.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentClassId">Class</label>
+                                <select id="studentClassId" required>
+                                    <option value="">Select class...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentCode">Student code (optional)</label>
+                                <input type="text" id="studentCode" placeholder="e.g. S-001">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentPassword">Password</label>
+                                <input type="password" id="studentPassword" placeholder="Temporary password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentPasswordConfirm">Confirm password</label>
+                                <input type="password" id="studentPasswordConfirm" placeholder="Confirm password"
+                                    required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary full-width">Create student account</button>
+                    </form>
+                    <div id="studentStatus" class="status-text"></div>
+
+                    <p class="info-note">For privacy reasons, teachers can create student accounts but cannot list all
+                        users. Ask an admin if you need a full export.</p>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3>Generate temporary accounts</h3>
+                        <span class="panel-card-subtitle">Create 0–40 temporary codes that students use once, then
+                            complete their profile.</span>
+                    </div>
+                    <form id="tempAccountsForm" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tempClassId">Class</label>
+                                <select id="tempClassId" required>
+                                    <option value="">Select class...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="tempCount">Number of accounts (1–40)</label>
+                                <input type="number" id="tempCount" min="1" max="40" value="10" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tempPassword">Password for all accounts</label>
+                            <input type="text" id="tempPassword" placeholder="Leave empty to auto-generate">
+                        </div>
+                        <button type="submit" class="btn-primary full-width">Generate temporary accounts</button>
+                    </form>
+                    <div id="tempStatus" class="status-text"></div>
+                    <pre id="tempAccountsList" class="empty-state" style="white-space: pre-wrap;"></pre>
+                </div>
+            </section>
+
+            <!-- Results -->
+            <section id="results" class="panel hidden">
+                <div class="panel-header">
+                    <div>
+                        <h2>Results</h2>
+                        <p>Track how your students are performing on quizzes.</p>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <h3>All results</h3>
+                        <span class="panel-card-subtitle">Showing recent submissions for your classes.</span>
+                    </div>
+                    <div id="resultsEmpty" class="empty-state">No results yet.</div>
+                    <table class="data-table hidden" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Quiz</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script src="teacher.js"></script>
+</body>
+
+</html>

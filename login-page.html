@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css"> <!-- link to external CSS -->
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="email" placeholder="Email or student code" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div id="status"></div>
+    </div>
+
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script>
+        const pb = new PocketBase("http://127.0.0.1:8090");
+
+        const form = document.getElementById("loginForm");
+        const status = document.getElementById("status");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            status.textContent = "";
+
+            let identity = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!identity || !password) {
+                status.style.color = "red";
+                status.textContent = "Please enter your email/code and password.";
+                return;
+            }
+
+            try {
+                // Allow students to log in with either email or studentCode
+                if (!identity.includes("@")) {
+                    try {
+                        const tempUser = await pb.collection("users").getFirstListItem(`studentCode="${identity}"`);
+                        identity = tempUser.email;
+                    } catch (lookupErr) {
+                        throw new Error("No account found for that code.");
+                    }
+                }
+
+                await pb.collection("users").authWithPassword(identity, password);
+
+                const user = pb.authStore.model;
+                status.style.color = "green";
+                status.textContent = "Login successful! Role: " + (user.role || "unknown");
+
+                // Redirect based on role
+                if (user.role === "teacher") {
+                    window.location.href = "teacher.html";
+                } else if (user.role === "admin") {
+                    // Redirect admins directly to PocketBase admin UI
+                    window.location.href = "http://127.0.0.1:8090/_/";
+                } else {
+                    // Student flow: force profile completion if fullName missing
+                    const fullName = (user.fullName || "").trim();
+                    if (!fullName) {
+                        window.location.href = "student-setup.html";
+                    } else {
+                        window.location.href = "index.html";
+                    }
+                }
+            } catch (err) {
+                status.style.color = "red";
+                status.textContent = "Login failed: " + err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

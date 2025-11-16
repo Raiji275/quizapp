@@ -8,6 +8,27 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script>
+        // Require a logged-in student before accessing the quiz
+        (function () {
+            try {
+                const pb = new PocketBase("http://127.0.0.1:8090");
+                const user = pb.authStore.model;
+                if (!pb.authStore.isValid || !user || user.role !== "student") {
+                    window.location.href = "login-page.html";
+                    return;
+                }
+                const fullName = (user.fullName || "").trim();
+                if (!fullName) {
+                    window.location.href = "student-setup.html";
+                }
+            } catch (e) {
+                console.error("Auth check failed", e);
+                window.location.href = "login-page.html";
+            }
+        })();
+    </script>
 </head>
 
 <body>
@@ -144,6 +165,7 @@
         </div>
     </div>
 
+    <script src="quiz-data.js"></script>
     <script src="script.js"></script>
 </body>
 

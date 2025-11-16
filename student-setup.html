@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile</title>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        .login-container h2 {
+            margin-bottom: 0.75rem;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Complete your profile</h2>
+        <p class="subtitle">Please enter your real name, email, and a new password before starting the quiz.</p>
+        <form id="profileForm">
+            <input type="text" id="fullName" placeholder="Full name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="New password" required>
+            <input type="password" id="passwordConfirm" placeholder="Confirm password" required>
+            <button type="submit">Save and start</button>
+        </form>
+        <div id="status"></div>
+    </div>
+
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script>
+        const pb = new PocketBase("http://127.0.0.1:8090");
+        const statusEl = document.getElementById("status");
+        const form = document.getElementById("profileForm");
+
+        function showStatus(message, color) {
+            statusEl.textContent = message;
+            statusEl.style.color = color;
+        }
+
+        function ensureStudentAuth() {
+            const user = pb.authStore.model;
+            if (!pb.authStore.isValid || !user || user.role !== "student") {
+                window.location.href = "login-page.html";
+                return null;
+            }
+            return user;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = ensureStudentAuth();
+            if (!user) return;
+
+            // Pre-fill email if present
+            const emailInput = document.getElementById("email");
+            if (user.email) {
+                emailInput.value = user.email;
+            }
+        });
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const user = ensureStudentAuth();
+            if (!user) return;
+
+            const fullName = document.getElementById("fullName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const passwordConfirm = document.getElementById("passwordConfirm").value;
+
+            if (!fullName || !email || !password || !passwordConfirm) {
+                showStatus("Please fill in all fields.", "red");
+                return;
+            }
+            if (password !== passwordConfirm) {
+                showStatus("Passwords do not match.", "red");
+                return;
+            }
+
+            try {
+                await pb.collection("users").update(user.id, {
+                    fullName,
+                    email,
+                    password,
+                    passwordConfirm,
+                });
+                showStatus("Profile updated. Redirecting...", "green");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 800);
+            } catch (err) {
+                showStatus("Failed to update profile: " + err.message, "red");
+            }
+        });
+    </script>
+</body>
+
+</html>
