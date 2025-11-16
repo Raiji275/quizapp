@@ -1,0 +1,76 @@
+🚀 ENGLISH QUIZ WEB APP - QUICK START GUIDE
+
+═══════════════════════════════════════════════════════════════
+
+📁 WHAT'S INCLUDED:
+├── index.html    (Main application file)
+├── style.css     (Beautiful styling)
+├── script.js     (Quiz functionality)
+├── README.md     (Complete documentation)
+└── QUICK_START.txt (This file)
+
+═══════════════════════════════════════════════════════════════
+
+🎯 HOW TO RUN:
+
+1. Double-click "index.html" 
+   OR
+   Right-click "index.html" → "Open with" → Your web browser
+
+2. The quiz will open in your default browser
+3. Click "Start Quiz" to begin!
+
+═══════════════════════════════════════════════════════════════
+
+📝 QUIZ STRUCTURE:
+
+• 10 Total Questions
+• 4 Reading Comprehension (with passages)
+• 3 Listening Questions (text-to-speech)
+• 3 Writing Tasks (with word count)
+• 5-minute timer
+• Instant results & detailed review
+
+═══════════════════════════════════════════════════════════════
+
+🌟 KEY FEATURES:
+
+✅ Fully responsive (works on phone, tablet, desktop)
+✅ Modern, beautiful design with animations
+✅ Progress tracking and navigation
+✅ Audio playback for listening questions
+✅ Word count for writing tasks
+✅ Detailed score breakdown
+✅ Answer review with explanations
+✅ Retake functionality
+
+═══════════════════════════════════════════════════════════════
+
+🔧 BROWSER REQUIREMENTS:
+
+✅ Chrome (Recommended - full audio support)
+✅ Firefox (Full support)
+✅ Safari (Works great)
+✅ Edge (Full support)
+✅ Mobile browsers (Responsive design)
+
+═══════════════════════════════════════════════════════════════
+
+💡 TIPS FOR BEST EXPERIENCE:
+
+• Use headphones for listening questions
+• Allow audio permissions when prompted
+• Take your time reading passages
+• Use the Previous/Next buttons to navigate
+• Check word count for writing questions
+• Review your answers at the end
+
+═══════════════════════════════════════════════════════════════
+
+❓ NEED HELP?
+
+Check the README.md file for detailed documentation, customization options, and troubleshooting guide.
+
+═══════════════════════════════════════════════════════════════
+
+🎓 ENJOY YOUR ENGLISH QUIZ! ✨

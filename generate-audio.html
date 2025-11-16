@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Audio Files</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+        }
+        .audio-item { 
+            margin-bottom: 30px; 
+            padding: 20px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+        }
+        .text-content { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+            font-style: italic; 
+            line-height: 1.6; 
+        }
+        .controls { 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+        .btn { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 14px; 
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎙️ Generate Audio Files for Quiz</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <p>This tool helps you create audio files for the listening questions. You can:</p>
+            <ol>
+                <li><strong>Play & Test</strong>: Click "Play TTS" to hear how each text sounds</li>
+                <li><strong>Record Yourself</strong>: Use the text as a script and record with your microphone</li>
+                <li><strong>Use External TTS</strong>: Copy text to online TTS services like TTSFree.com</li>
+                <li><strong>Save Files</strong>: Name your audio files as shown and place them in the 'audio' folder</li>
+            </ol>
+        </div>
+
+        <div class="audio-item">
+            <h3>1. listening1.mp3 - Time Management</h3>
+            <div class="text-content" id="text1">
+                Good morning, everyone. Today we'll be discussing the importance of time management in academic success. Studies have shown that students who effectively manage their time are more likely to achieve better grades and experience less stress. The key components of good time management include setting priorities, creating schedules, avoiding procrastination, and taking regular breaks. Remember, it's not about working harder, but working smarter.
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="playText('text1')">▶️ Play TTS</button>
+                <button class="btn btn-success" onclick="copyText('text1')">📋 Copy Text</button>
+                <span>Duration: ~50-60 seconds</span>
+            </div>
+        </div>
+
+        <div class="audio-item">
+            <h3>2. listening2.mp3 - Museum Guide</h3>
+            <div class="text-content" id="text2">
+                Welcome to the museum's audio guide for the Ancient Civilizations exhibit. As you walk through this section, you'll discover artifacts from ancient Egypt, Greece, and Rome. The highlight of this exhibit is a 3,000-year-old Egyptian sarcophagus, discovered in the Valley of the Kings in 1922. The intricate hieroglyphics tell the story of a high priest who served during the reign of Ramesses II. Please take your time to examine the detailed craftsmanship and consider how these artifacts connect us to our shared human history.
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="playText('text2')">▶️ Play TTS</button>
+                <button class="btn btn-success" onclick="copyText('text2')">📋 Copy Text</button>
+                <span>Duration: ~60-75 seconds</span>
+            </div>
+        </div>
+
+        <div class="audio-item">
+            <h3>3. listening3.mp3 - Flight Announcement</h3>
+            <div class="text-content" id="text3">
+                Attention passengers, this is your captain speaking. We're currently cruising at 35,000 feet with clear skies ahead. Our estimated arrival time in London is 2:30 PM local time, which puts us about 15 minutes ahead of schedule. The weather in London is partly cloudy with a temperature of 18 degrees Celsius. We'll begin our descent in approximately one hour. Thank you for flying with us today, and we hope you're enjoying your flight.
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="playText('text3')">▶️ Play TTS</button>
+                <button class="btn btn-success" onclick="copyText('text3')">📋 Copy Text</button>
+                <span>Duration: ~40-50 seconds</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px;">
+            <h3>🔧 External TTS Services:</h3>
+            <ul>
+                <li><a href="https://ttsfree.com/" target="_blank">TTSFree.com</a> - Free online TTS</li>
+                <li><a href="https://www.naturalreaders.com/" target="_blank">Natural Readers</a> - High quality voices</li>
+                <li><a href="https://elevenlabs.io/" target="_blank">ElevenLabs</a> - AI voices (paid)</li>
+                <li><a href="https://speechify.com/" target="_blank">Speechify</a> - Professional TTS</li>
+            </ul>
+            <p><strong>Tip:</strong> Save the generated audio files as MP3 format in the 'audio' folder with the exact names shown above.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="btn btn-success">← Back to Quiz</a>
+        </div>
+    </div>
+
+    <script>
+        function playText(textId) {
+            const text = document.getElementById(textId).textContent;
+            
+            if ('speechSynthesis' in window) {
+                // Stop any ongoing speech
+                speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.85;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                // Try to get a good English voice
+                const voices = speechSynthesis.getVoices();
+                const englishVoice = voices.find(voice => 
+                    voice.lang.startsWith('en') && voice.localService
+                ) || voices.find(voice => voice.lang.startsWith('en'));
+                
+                if (englishVoice) {
+                    utterance.voice = englishVoice;
+                }
+                
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Text-to-speech not supported in this browser. Try Chrome or Firefox.');
+            }
+        }
+        
+        function copyText(textId) {
+            const text = document.getElementById(textId).textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Text copied to clipboard!');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Text copied to clipboard!');
+            }
+        }
+        
+        // Load voices when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.getVoices();
+                speechSynthesis.onvoiceschanged = () => {
+                    console.log('Voices loaded:', speechSynthesis.getVoices().length);
+                };
+            }
+        });
+    </script>
+</body>
+</html>

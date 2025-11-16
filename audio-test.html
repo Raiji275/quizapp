@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Test - English Quiz App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .test-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .test-text {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f1b0b7;
+        }
+
+        .status.info {
+            background: #cce7ff;
+            color: #004a80;
+            border: 1px solid #99d1ff;
+        }
+
+        .voice-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .voice-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .voice-item:hover {
+            background: #f0f0f0;
+        }
+
+        .voice-item.selected {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎧 Audio Test for English Quiz</h1>
+        <p>Use this page to test different text-to-speech options and find what works best in your browser.</p>
+
+        <!-- Web Speech API Test -->
+        <div class="test-section">
+            <h3>🔊 Web Speech API (Built-in Browser TTS)</h3>
+            <div class="test-text" id="webSpeechText">
+                Good morning, everyone. Today we'll be discussing the importance of time management in academic success.
+                Studies have shown that students who effectively manage their time are more likely to achieve better
+                grades.
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="testWebSpeech()">Test Web Speech</button>
+                <button class="btn btn-warning" onclick="stopSpeech()">Stop</button>
+                <button class="btn btn-success" onclick="listVoices()">List Available Voices</button>
+            </div>
+            <div id="webSpeechStatus" class="status" style="display: none;"></div>
+            <div id="voiceList" class="voice-list" style="display: none;"></div>
+        </div>
+
+        <!-- External TTS Test -->
+        <div class="test-section">
+            <h3>🌐 External TTS Service</h3>
+            <div class="test-text" id="externalTTSText">
+                Welcome to the museum's audio guide for the Ancient Civilizations exhibit. The highlight of this exhibit
+                is a 3,000-year-old Egyptian sarcophagus, discovered in the Valley of the Kings.
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="testExternalTTS('streamelements')">Test StreamElements
+                    TTS</button>
+                <button class="btn btn-primary" onclick="testExternalTTS('ttsfree')">Test TTSFree.com</button>
+                <button class="btn btn-primary" onclick="testExternalTTS('voicerss')">Test VoiceRSS</button>
+            </div>
+            <div id="externalTTSStatus" class="status" style="display: none;"></div>
+        </div>
+
+        <!-- Browser Compatibility Info -->
+        <div class="test-section">
+            <h3>ℹ️ Browser Compatibility</h3>
+            <div id="compatibilityInfo"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="btn btn-success">← Back to Quiz</a>
+        </div>
+    </div>
+
+    <script>
+        let selectedVoice = null;
+
+        // Check browser compatibility
+        function checkCompatibility() {
+            const info = document.getElementById('compatibilityInfo');
+            let html = '<ul style="list-style-type: none; padding: 0;">';
+
+            if ('speechSynthesis' in window) {
+                html += '<li style="color: #28a745; margin: 5px 0;">✅ Web Speech API supported</li>';
+                html += `<li style="color: #666; margin: 5px 0;">📊 Available voices: ${speechSynthesis.getVoices().length}</li>`;
+            } else {
+                html += '<li style="color: #dc3545; margin: 5px 0;">❌ Web Speech API not supported</li>';
+            }
+
+            if ('Audio' in window) {
+                html += '<li style="color: #28a745; margin: 5px 0;">✅ HTML5 Audio supported</li>';
+            } else {
+                html += '<li style="color: #dc3545; margin: 5px 0;">❌ HTML5 Audio not supported</li>';
+            }
+
+            html += `<li style="color: #666; margin: 5px 0;">🌐 Browser: ${navigator.userAgent.split(' ').slice(-1)[0]}</li>`;
+            html += '</ul>';
+
+            info.innerHTML = html;
+        }
+
+        function showStatus(elementId, message, type = 'info') {
+            const statusEl = document.getElementById(elementId);
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        function testWebSpeech() {
+            const text = document.getElementById('webSpeechText').textContent;
+
+            if (!('speechSynthesis' in window)) {
+                showStatus('webSpeechStatus', 'Web Speech API not supported in this browser', 'error');
+                return;
+            }
+
+            // Stop any ongoing speech
+            speechSynthesis.cancel();
+
+            showStatus('webSpeechStatus', 'Loading voices and preparing speech...', 'info');
+
+            const speak = () => {
+                const utterance = new SpeechSynthesisUtterance(text);
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                utterance.rate = 0.85;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+
+                utterance.onstart = () => {
+                    showStatus('webSpeechStatus', 'Playing audio...', 'info');
+                };
+
+                utterance.onend = () => {
+                    showStatus('webSpeechStatus', 'Speech completed successfully!', 'success');
+                };
+
+                utterance.onerror = (event) => {
+                    showStatus('webSpeechStatus', `Speech error: ${event.error}`, 'error');
+                };
+
+                speechSynthesis.speak(utterance);
+            };
+
+            // Wait for voices to load if needed
+            const voices = speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                speechSynthesis.onvoiceschanged = () => {
+                    speak();
+                };
+            } else {
+                speak();
+            }
+        }
+
+        function stopSpeech() {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                showStatus('webSpeechStatus', 'Speech stopped', 'info');
+            }
+        }
+
+        function listVoices() {
+            const voiceList = document.getElementById('voiceList');
+            const voices = speechSynthesis.getVoices();
+
+            if (voices.length === 0) {
+                showStatus('webSpeechStatus', 'No voices available or still loading...', 'error');
+                return;
+            }
+
+            let html = '';
+            voices.forEach((voice, index) => {
+                const isEnglish = voice.lang.startsWith('en');
+                const className = isEnglish ? 'voice-item' : 'voice-item' + ' style="opacity: 0.5"';
+                html += `<div class="${className}" onclick="selectVoice(${index})">
+                    <strong>${voice.name}</strong> (${voice.lang}) ${voice.default ? '- Default' : ''} ${voice.localService ? '- Local' : '- Remote'}
+                </div>`;
+            });
+
+            voiceList.innerHTML = html;
+            voiceList.style.display = 'block';
+            showStatus('webSpeechStatus', `Found ${voices.length} voices. Click a voice to select it.`, 'success');
+        }
+
+        function selectVoice(index) {
+            const voices = speechSynthesis.getVoices();
+            selectedVoice = voices[index];
+
+            // Update visual selection
+            document.querySelectorAll('.voice-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelectorAll('.voice-item')[index].classList.add('selected');
+
+            showStatus('webSpeechStatus', `Selected voice: ${selectedVoice.name}`, 'success');
+        }
+
+        function testExternalTTS(service) {
+            const text = document.getElementById('externalTTSText').textContent;
+            let ttsUrl = '';
+
+            switch (service) {
+                case 'streamelements':
+                    ttsUrl = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(text)}`;
+                    break;
+                case 'ttsfree':
+                    // Note: This might require CORS or different approach
+                    showStatus('externalTTSStatus', 'TTSFree.com requires manual testing - visit the website directly', 'info');
+                    window.open(`https://ttsfree.com/`, '_blank');
+                    return;
+                case 'voicerss':
+                    // Note: VoiceRSS requires API key
+                    showStatus('externalTTSStatus', 'VoiceRSS requires API key - this is just a demo', 'info');
+                    return;
+            }
+
+            showStatus('externalTTSStatus', 'Loading external TTS...', 'info');
+
+            const audio = new Audio();
+
+            audio.onloadstart = () => {
+                showStatus('externalTTSStatus', 'Connecting to TTS service...', 'info');
+            };
+
+            audio.oncanplay = () => {
+                showStatus('externalTTSStatus', 'Audio ready, playing...', 'info');
+                audio.play().catch(error => {
+                    showStatus('externalTTSStatus', `Playback failed: ${error.message}`, 'error');
+                });
+            };
+
+            audio.onended = () => {
+                showStatus('externalTTSStatus', 'External TTS completed successfully!', 'success');
+            };
+
+            audio.onerror = (error) => {
+                showStatus('externalTTSStatus', `External TTS failed: ${error.message || 'Service unavailable'}`, 'error');
+            };
+
+            // Timeout for slow services
+            const timeout = setTimeout(() => {
+                if (audio.readyState < 2) {
+                    showStatus('externalTTSStatus', 'TTS service timeout - try again later', 'error');
+                }
+            }, 10000);
+
+            audio.oncanplay = () => {
+                clearTimeout(timeout);
+                audio.play();
+            };
+
+            audio.src = ttsUrl;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkCompatibility();
+
+            // Try to load voices immediately
+            if ('speechSynthesis' in window) {
+                speechSynthesis.getVoices();
+                speechSynthesis.onvoiceschanged = () => {
+                    checkCompatibility();
+                };
+            }
+        });
+    </script>
+</body>
+
+</html>

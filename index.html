@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quiz App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">English Quiz App</h1>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">Question 1 of 10</span>
+            </div>
+        </header>
+
+        <!-- Start Screen -->
+        <div class="screen" id="startScreen">
+            <div class="start-content">
+                <h2>Welcome to the English Quiz!</h2>
+                <p>Test your English skills with reading, listening, and writing questions.</p>
+                <div class="quiz-info">
+                    <div class="info-item">
+                        <span class="info-icon">📖</span>
+                        <span>Reading Comprehension</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🎧</span>
+                        <span>Listening Skills</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">✍️</span>
+                        <span>Writing Tasks</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="startQuizBtn">Start Quiz</button>
+                <div
+                    style="margin-top: 20px; text-align: center; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="audio-test.html" class="btn btn-secondary"
+                        style="text-decoration: none; display: inline-block;">🎧 Test Audio</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen hidden" id="quizScreen">
+            <div class="question-container">
+                <div class="question-type" id="questionType">Reading Question</div>
+                <div class="timer" id="timer">05:00</div>
+
+                <!-- Reading Question -->
+                <div class="question-content" id="readingQuestion">
+                    <div class="passage" id="passage"></div>
+                    <div class="question" id="question"></div>
+                    <div class="options" id="options"></div>
+                </div>
+
+                <!-- Listening Question -->
+                <div class="question-content hidden" id="listeningQuestion">
+                    <div class="audio-container">
+                        <div class="audio-player">
+                            <audio id="audioPlayer" preload="metadata" style="display: none;"></audio>
+                            <div class="audio-controls">
+                                <button class="audio-btn" id="playAudioBtn">🔊 Play Audio</button>
+                                <div class="audio-progress" id="audioProgress">
+                                    <div class="progress-bar-audio">
+                                        <div class="progress-fill-audio" id="audioProgressFill"></div>
+                                    </div>
+                                    <span class="audio-time">
+                                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="audio-status" id="audioStatus"></div>
+                        </div>
+                        <div class="audio-text hidden" id="audioText"></div>
+                    </div>
+                    <div class="question" id="listeningQuestionText"></div>
+                    <div class="options" id="listeningOptions"></div>
+                </div>
+
+                <!-- Writing Question -->
+                <div class="question-content hidden" id="writingQuestion">
+                    <div class="writing-prompt" id="writingPrompt"></div>
+                    <textarea class="writing-area" id="writingArea" placeholder="Write your answer here..."></textarea>
+                    <div class="word-count">Words: <span id="wordCount">0</span></div>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prevBtn" disabled>Previous</button>
+                <button class="btn btn-primary" id="nextBtn">Next</button>
+                <button class="btn btn-success hidden" id="submitBtn">Submit Quiz</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen hidden" id="resultsScreen">
+            <div class="results-content">
+                <h2>Quiz Completed!</h2>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <span class="score-percentage" id="scorePercentage">0%</span>
+                        <span class="score-text">Your Score</span>
+                    </div>
+                </div>
+                <div class="score-breakdown">
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Reading:</span>
+                        <span class="breakdown-score" id="readingScore">0/4</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Listening:</span>
+                        <span class="breakdown-score" id="listeningScore">0/3</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Writing:</span>
+                        <span class="breakdown-score" id="writingScore">0/3</span>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="retakeBtn">Retake Quiz</button>
+                    <button class="btn btn-secondary" id="reviewBtn">Review Answers</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Screen -->
+        <div class="screen hidden" id="reviewScreen">
+            <div class="review-content">
+                <h2>Review Your Answers</h2>
+                <div class="review-questions" id="reviewQuestions"></div>
+                <button class="btn btn-secondary" id="backToResultsBtn">Back to Results</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
